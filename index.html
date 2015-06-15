@@ -1,0 +1,476 @@
+<html>
+<head>
+<link href="//cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.css" rel="stylesheet" type="text/css"/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+<script src="js/techan.min.js"></script>
+<script src="js/loader.js"></script>
+<style>
+    body,td,select {
+        font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    path.candle {
+        stroke: #000000;
+    }
+
+    path.candle.body {
+        stroke-width: 0;
+    }
+
+    path.candle.up {
+        fill: #00AA00;
+        stroke: #00AA00;
+    }
+
+    path.candle.down {
+        fill: #FF0000;
+        stroke: #FF0000;
+    }
+
+    path.ohlc {
+        stroke: #000000;
+        stroke-width: 1;
+    }
+
+    path.ohlc.up {
+        stroke: #00AA00;
+    }
+
+    path.ohlc.down {
+        stroke: #FF0000;
+    }
+
+    path.volume {
+        fill: #EEEEEE;
+    }
+
+    path.line {
+        fill: none;
+        stroke: #BF5FFF;
+        stroke-width: 1;
+    }
+
+    .extent {
+        stroke: #fff;
+        fill-opacity: .125;
+        shape-rendering: crispEdges;
+    }
+
+    .crosshair {
+        cursor: crosshair;
+    }
+
+    .crosshair path.wire {
+        stroke: #DDDDDD;
+        stroke-dasharray: 1, 1;
+    }
+
+    .crosshair .axisannotation path {
+        fill: #DDDDDD;
+    }
+</style>
+</head>
+<body>
+Welcome to BAKtrader!
+<table width="100%" height="500px;" border="1" style="border-collapse: collapse;">
+	<tr style="height: 0px">
+		<th>Settings</th>
+		<th>EURUSD</th>
+		<th>Results</th>
+	</tr>
+	<tr>
+		<td style="width: 30%; vertical-align: top;">
+			Symbol:<br/>
+			<select name="symbol">
+				<optgroup label="Foreign Exchange">
+					<option>EURUSD</option>
+				</optgroup>
+			</select>
+			<br/><br/>
+			Granularity:<br/>
+			<select name="symbol">
+				<option value="1m">1 Minute</option>
+				<option value="5m">5 Minutes</option>
+				<option value="30m">30 Minutes</option>
+				<option value="1h">1 Hour</option>
+				<option value="1d">1 Day</option>
+			</select>
+			<br/><br/>
+			Indicators:
+			<div style="height: 300px; overflow: auto; border: 1px solid #CCC;">
+				<input type="checkbox" id="checkbox_AD" value="AD"><label for="checkbox_AD"> Chaikin A/D Line</label><br/>
+				<input type="checkbox" id="checkbox_ADOSC" value="ADOSC"><label for="checkbox_ADOSC"> Chaikin A/D Oscillator</label><br/>
+				<input type="checkbox" id="checkbox_ADX" value="ADX"><label for="checkbox_ADX"> Average Directional Movement Index</label><br/>
+				<input type="checkbox" id="checkbox_ADXR" value="ADXR"><label for="checkbox_ADXR"> Average Directional Movement Index Rating</label><br/>
+				<input type="checkbox" id="checkbox_APO" value="APO"><label for="checkbox_APO"> Absolute Price Oscillator</label><br/>
+				<input type="checkbox" id="checkbox_AROON" value="AROON"><label for="checkbox_AROON"> Aroon</label><br/>
+				<input type="checkbox" id="checkbox_AROONOSC" value="AROONOSC"><label for="checkbox_AROONOSC"> Aroon Oscillator</label><br/>
+				<input type="checkbox" id="checkbox_ATR" value="ATR"><label for="checkbox_ATR"> Average True Range</label><br/>
+				<input type="checkbox" id="checkbox_AVGPRICE" value="AVGPRICE"><label for="checkbox_AVGPRICE"> Average Price</label><br/>
+				<input type="checkbox" id="checkbox_BBANDS" value="BBANDS"><label for="checkbox_BBANDS"> Bollinger Bands</label><br/>
+				<input type="checkbox" id="checkbox_BETA" value="BETA"><label for="checkbox_BETA"> Beta</label><br/>
+				<input type="checkbox" id="checkbox_BOP" value="BOP"><label for="checkbox_BOP"> Balance Of Power</label><br/>
+				<input type="checkbox" id="checkbox_CCI" value="CCI"><label for="checkbox_CCI"> Commodity Channel Index</label><br/>
+				<input type="checkbox" id="checkbox_CDL2CROWS" value="CDL2CROWS"><label for="checkbox_CDL2CROWS"> Two Crows</label><br/>
+				<input type="checkbox" id="checkbox_CDL3BLACKCROWS" value="CDL3BLACKCROWS"><label for="checkbox_CDL3BLACKCROWS"> Three Black Crows</label><br/>
+				<input type="checkbox" id="checkbox_CDL3INSIDE" value="CDL3INSIDE"><label for="checkbox_CDL3INSIDE"> Three Inside Up/Down</label><br/>
+				<input type="checkbox" id="checkbox_CDL3LINESTRIKE" value="CDL3LINESTRIKE"><label for="checkbox_CDL3LINESTRIKE"> Three-Line Strike </label><br/>
+				<input type="checkbox" id="checkbox_CDL3OUTSIDE" value="CDL3OUTSIDE"><label for="checkbox_CDL3OUTSIDE"> Three Outside Up/Down</label><br/>
+				<input type="checkbox" id="checkbox_CDL3STARSINSOUTH" value="CDL3STARSINSOUTH"><label for="checkbox_CDL3STARSINSOUTH"> Three Stars In The South</label><br/>
+				<input type="checkbox" id="checkbox_CDL3WHITESOLDIERS" value="CDL3WHITESOLDIERS"><label for="checkbox_CDL3WHITESOLDIERS"> Three Advancing White Soldiers</label><br/>
+				<input type="checkbox" id="checkbox_CDLABANDONEDBABY" value="CDLABANDONEDBABY"><label for="checkbox_CDLABANDONEDBABY"> Abandoned Baby</label><br/>
+				<input type="checkbox" id="checkbox_CDLADVANCEBLOCK" value="CDLADVANCEBLOCK"><label for="checkbox_CDLADVANCEBLOCK"> Advance Block</label><br/>
+				<input type="checkbox" id="checkbox_CDLBELTHOLD" value="CDLBELTHOLD"><label for="checkbox_CDLBELTHOLD"> Belt-hold</label><br/>
+				<input type="checkbox" id="checkbox_CDLBREAKAWAY" value="CDLBREAKAWAY"><label for="checkbox_CDLBREAKAWAY"> Breakaway</label><br/>
+				<input type="checkbox" id="checkbox_CDLCLOSINGMARUBOZU" value="CDLCLOSINGMARUBOZU"><label for="checkbox_CDLCLOSINGMARUBOZU"> Closing Marubozu</label><br/>
+				<input type="checkbox" id="checkbox_CDLCONCEALBABYSWALL" value="CDLCONCEALBABYSWALL"><label for="checkbox_CDLCONCEALBABYSWALL"> Concealing Baby Swallow</label><br/>
+				<input type="checkbox" id="checkbox_CDLCOUNTERATTACK" value="CDLCOUNTERATTACK"><label for="checkbox_CDLCOUNTERATTACK"> Counterattack</label><br/>
+				<input type="checkbox" id="checkbox_CDLDARKCLOUDCOVER" value="CDLDARKCLOUDCOVER"><label for="checkbox_CDLDARKCLOUDCOVER"> Dark Cloud Cover</label><br/>
+				<input type="checkbox" id="checkbox_CDLDOJI" value="CDLDOJI"><label for="checkbox_CDLDOJI"> Doji</label><br/>
+				<input type="checkbox" id="checkbox_CDLDOJISTAR" value="CDLDOJISTAR"><label for="checkbox_CDLDOJISTAR"> Doji Star</label><br/>
+				<input type="checkbox" id="checkbox_CDLDRAGONFLYDOJI" value="CDLDRAGONFLYDOJI"><label for="checkbox_CDLDRAGONFLYDOJI"> Dragonfly Doji</label><br/>
+				<input type="checkbox" id="checkbox_CDLENGULFING" value="CDLENGULFING"><label for="checkbox_CDLENGULFING"> Engulfing Pattern</label><br/>
+				<input type="checkbox" id="checkbox_CDLEVENINGDOJISTAR" value="CDLEVENINGDOJISTAR"><label for="checkbox_CDLEVENINGDOJISTAR"> Evening Doji Star</label><br/>
+				<input type="checkbox" id="checkbox_CDLEVENINGSTAR" value="CDLEVENINGSTAR"><label for="checkbox_CDLEVENINGSTAR"> Evening Star</label><br/>
+				<input type="checkbox" id="checkbox_CDLGAPSIDESIDEWHITE" value="CDLGAPSIDESIDEWHITE"><label for="checkbox_CDLGAPSIDESIDEWHITE"> Up/Down-gap side-by-side white lines</label><br/>
+				<input type="checkbox" id="checkbox_CDLGRAVESTONEDOJI" value="CDLGRAVESTONEDOJI"><label for="checkbox_CDLGRAVESTONEDOJI"> Gravestone Doji</label><br/>
+				<input type="checkbox" id="checkbox_CDLHAMMER" value="CDLHAMMER"><label for="checkbox_CDLHAMMER"> Hammer</label><br/>
+				<input type="checkbox" id="checkbox_CDLHANGINGMAN" value="CDLHANGINGMAN"><label for="checkbox_CDLHANGINGMAN"> Hanging Man</label><br/>
+				<input type="checkbox" id="checkbox_CDLHARAMI" value="CDLHARAMI"><label for="checkbox_CDLHARAMI"> Harami Pattern</label><br/>
+				<input type="checkbox" id="checkbox_CDLHARAMICROSS" value="CDLHARAMICROSS"><label for="checkbox_CDLHARAMICROSS"> Harami Cross Pattern</label><br/>
+				<input type="checkbox" id="checkbox_CDLHIGHWAVE" value="CDLHIGHWAVE"><label for="checkbox_CDLHIGHWAVE"> High-Wave Candle</label><br/>
+				<input type="checkbox" id="checkbox_CDLHIKKAKE" value="CDLHIKKAKE"><label for="checkbox_CDLHIKKAKE"> Hikkake Pattern</label><br/>
+				<input type="checkbox" id="checkbox_CDLHIKKAKEMOD" value="CDLHIKKAKEMOD"><label for="checkbox_CDLHIKKAKEMOD"> Modified Hikkake Pattern</label><br/>
+				<input type="checkbox" id="checkbox_CDLHOMINGPIGEON" value="CDLHOMINGPIGEON"><label for="checkbox_CDLHOMINGPIGEON"> Homing Pigeon</label><br/>
+				<input type="checkbox" id="checkbox_CDLIDENTICAL3CROWS" value="CDLIDENTICAL3CROWS"><label for="checkbox_CDLIDENTICAL3CROWS"> Identical Three Crows</label><br/>
+				<input type="checkbox" id="checkbox_CDLINNECK" value="CDLINNECK"><label for="checkbox_CDLINNECK"> In-Neck Pattern</label><br/>
+				<input type="checkbox" id="checkbox_CDLINVERTEDHAMMER" value="CDLINVERTEDHAMMER"><label for="checkbox_CDLINVERTEDHAMMER"> Inverted Hammer</label><br/>
+				<input type="checkbox" id="checkbox_CDLKICKING" value="CDLKICKING"><label for="checkbox_CDLKICKING"> Kicking</label><br/>
+				<input type="checkbox" id="checkbox_CDLKICKINGBYLENGTH" value="CDLKICKINGBYLENGTH"><label for="checkbox_CDLKICKINGBYLENGTH"> Kicking - bull/bear determined by the longer marubozu</label><br/>
+				<input type="checkbox" id="checkbox_CDLLADDERBOTTOM" value="CDLLADDERBOTTOM"><label for="checkbox_CDLLADDERBOTTOM"> Ladder Bottom</label><br/>
+				<input type="checkbox" id="checkbox_CDLLONGLEGGEDDOJI" value="CDLLONGLEGGEDDOJI"><label for="checkbox_CDLLONGLEGGEDDOJI"> Long Legged Doji</label><br/>
+				<input type="checkbox" id="checkbox_CDLLONGLINE" value="CDLLONGLINE"><label for="checkbox_CDLLONGLINE"> Long Line Candle</label><br/>
+				<input type="checkbox" id="checkbox_CDLMARUBOZU" value="CDLMARUBOZU"><label for="checkbox_CDLMARUBOZU"> Marubozu</label><br/>
+				<input type="checkbox" id="checkbox_CDLMATCHINGLOW" value="CDLMATCHINGLOW"><label for="checkbox_CDLMATCHINGLOW"> Matching Low</label><br/>
+				<input type="checkbox" id="checkbox_CDLMATHOLD" value="CDLMATHOLD"><label for="checkbox_CDLMATHOLD"> Mat Hold</label><br/>
+				<input type="checkbox" id="checkbox_CDLMORNINGDOJISTAR" value="CDLMORNINGDOJISTAR"><label for="checkbox_CDLMORNINGDOJISTAR"> Morning Doji Star</label><br/>
+				<input type="checkbox" id="checkbox_CDLMORNINGSTAR" value="CDLMORNINGSTAR"><label for="checkbox_CDLMORNINGSTAR"> Morning Star</label><br/>
+				<input type="checkbox" id="checkbox_CDLONNECK" value="CDLONNECK"><label for="checkbox_CDLONNECK"> On-Neck Pattern</label><br/>
+				<input type="checkbox" id="checkbox_CDLPIERCING" value="CDLPIERCING"><label for="checkbox_CDLPIERCING"> Piercing Pattern</label><br/>
+				<input type="checkbox" id="checkbox_CDLRICKSHAWMAN" value="CDLRICKSHAWMAN"><label for="checkbox_CDLRICKSHAWMAN"> Rickshaw Man</label><br/>
+				<input type="checkbox" id="checkbox_CDLRISEFALL3METHODS" value="CDLRISEFALL3METHODS"><label for="checkbox_CDLRISEFALL3METHODS"> Rising/Falling Three Methods</label><br/>
+				<input type="checkbox" id="checkbox_CDLSEPARATINGLINES" value="CDLSEPARATINGLINES"><label for="checkbox_CDLSEPARATINGLINES"> Separating Lines</label><br/>
+				<input type="checkbox" id="checkbox_CDLSHOOTINGSTAR" value="CDLSHOOTINGSTAR"><label for="checkbox_CDLSHOOTINGSTAR"> Shooting Star</label><br/>
+				<input type="checkbox" id="checkbox_CDLSHORTLINE" value="CDLSHORTLINE"><label for="checkbox_CDLSHORTLINE"> Short Line Candle</label><br/>
+				<input type="checkbox" id="checkbox_CDLSPINNINGTOP" value="CDLSPINNINGTOP"><label for="checkbox_CDLSPINNINGTOP"> Spinning Top</label><br/>
+				<input type="checkbox" id="checkbox_CDLSTALLEDPATTERN" value="CDLSTALLEDPATTERN"><label for="checkbox_CDLSTALLEDPATTERN"> Stalled Pattern</label><br/>
+				<input type="checkbox" id="checkbox_CDLSTICKSANDWICH" value="CDLSTICKSANDWICH"><label for="checkbox_CDLSTICKSANDWICH"> Stick Sandwich</label><br/>
+				<input type="checkbox" id="checkbox_CDLTAKURI" value="CDLTAKURI"><label for="checkbox_CDLTAKURI"> Takuri (Dragonfly Doji with very long lower shadow)</label><br/>
+				<input type="checkbox" id="checkbox_CDLTASUKIGAP" value="CDLTASUKIGAP"><label for="checkbox_CDLTASUKIGAP"> Tasuki Gap</label><br/>
+				<input type="checkbox" id="checkbox_CDLTHRUSTING" value="CDLTHRUSTING"><label for="checkbox_CDLTHRUSTING"> Thrusting Pattern</label><br/>
+				<input type="checkbox" id="checkbox_CDLTRISTAR" value="CDLTRISTAR"><label for="checkbox_CDLTRISTAR"> Tristar Pattern</label><br/>
+				<input type="checkbox" id="checkbox_CDLUNIQUE3RIVER" value="CDLUNIQUE3RIVER"><label for="checkbox_CDLUNIQUE3RIVER"> Unique 3 River</label><br/>
+				<input type="checkbox" id="checkbox_CDLUPSIDEGAP2CROWS" value="CDLUPSIDEGAP2CROWS"><label for="checkbox_CDLUPSIDEGAP2CROWS"> Upside Gap Two Crows</label><br/>
+				<input type="checkbox" id="checkbox_CDLXSIDEGAP3METHODS" value="CDLXSIDEGAP3METHODS"><label for="checkbox_CDLXSIDEGAP3METHODS"> Upside/Downside Gap Three Methods</label><br/>
+				<input type="checkbox" id="checkbox_CMO" value="CMO"><label for="checkbox_CMO"> Chande Momentum Oscillator</label><br/>
+				<input type="checkbox" id="checkbox_CORREL" value="CORREL"><label for="checkbox_CORREL"> Pearson's Correlation Coefficient (r)</label><br/>
+				<input type="checkbox" id="checkbox_DEMA" value="DEMA"><label for="checkbox_DEMA"> Double Exponential Moving Average</label><br/>
+				<input type="checkbox" id="checkbox_DX" value="DX"><label for="checkbox_DX"> Directional Movement Index</label><br/>
+				<input type="checkbox" id="checkbox_EMA" value="EMA"><label for="checkbox_EMA"> Exponential Moving Average</label><br/>
+				<input type="checkbox" id="checkbox_HT_DCPERIOD" value="HT_DCPERIOD"><label for="checkbox_HT_DCPERIOD"> Hilbert Transform - Dominant Cycle Period</label><br/>
+				<input type="checkbox" id="checkbox_HT_DCPHASE" value="HT_DCPHASE"><label for="checkbox_HT_DCPHASE"> Hilbert Transform - Dominant Cycle Phase</label><br/>
+				<input type="checkbox" id="checkbox_HT_PHASOR" value="HT_PHASOR"><label for="checkbox_HT_PHASOR"> Hilbert Transform - Phasor Components</label><br/>
+				<input type="checkbox" id="checkbox_HT_SINE" value="HT_SINE"><label for="checkbox_HT_SINE"> Hilbert Transform - SineWave</label><br/>
+				<input type="checkbox" id="checkbox_HT_TRENDLINE" value="HT_TRENDLINE"><label for="checkbox_HT_TRENDLINE"> Hilbert Transform - Instantaneous Trendline</label><br/>
+				<input type="checkbox" id="checkbox_HT_TRENDMODE" value="HT_TRENDMODE"><label for="checkbox_HT_TRENDMODE"> Hilbert Transform - Trend vs Cycle Mode</label><br/>
+				<input type="checkbox" id="checkbox_KAMA" value="KAMA"><label for="checkbox_KAMA"> Kaufman Adaptive Moving Average</label><br/>
+				<input type="checkbox" id="checkbox_LINEARREG" value="LINEARREG"><label for="checkbox_LINEARREG"> Linear Regression</label><br/>
+				<input type="checkbox" id="checkbox_LINEARREG_ANGLE" value="LINEARREG_ANGLE"><label for="checkbox_LINEARREG_ANGLE"> Linear Regression Angle</label><br/>
+				<input type="checkbox" id="checkbox_LINEARREG_INTERCEPT" value="LINEARREG_INTERCEPT"><label for="checkbox_LINEARREG_INTERCEPT"> Linear Regression Intercept</label><br/>
+				<input type="checkbox" id="checkbox_LINEARREG_SLOPE" value="LINEARREG_SLOPE"><label for="checkbox_LINEARREG_SLOPE"> Linear Regression Slope</label><br/>
+				<input type="checkbox" id="checkbox_MA" value="MA"><label for="checkbox_MA"> All Moving Average</label><br/>
+				<input type="checkbox" id="checkbox_MACD" value="MACD"><label for="checkbox_MACD"> Moving Average Convergence/Divergence</label><br/>
+				<input type="checkbox" id="checkbox_MACDEXT" value="MACDEXT"><label for="checkbox_MACDEXT"> MACD with controllable MA type</label><br/>
+				<input type="checkbox" id="checkbox_MACDFIX" value="MACDFIX"><label for="checkbox_MACDFIX"> Moving Average Convergence/Divergence Fix 12/26</label><br/>
+				<input type="checkbox" id="checkbox_MAMA" value="MAMA"><label for="checkbox_MAMA"> MESA Adaptive Moving Average</label><br/>
+				<input type="checkbox" id="checkbox_MAX" value="MAX"><label for="checkbox_MAX"> Highest value over a specified period</label><br/>
+				<input type="checkbox" id="checkbox_MAXINDEX" value="MAXINDEX"><label for="checkbox_MAXINDEX"> Index of highest value over a specified period</label><br/>
+				<input type="checkbox" id="checkbox_MEDPRICE" value="MEDPRICE"><label for="checkbox_MEDPRICE"> Median Price</label><br/>
+				<input type="checkbox" id="checkbox_MFI" value="MFI"><label for="checkbox_MFI"> Money Flow Index</label><br/>
+				<input type="checkbox" id="checkbox_MIDPOINT" value="MIDPOINT"><label for="checkbox_MIDPOINT"> MidPoint over period</label><br/>
+				<input type="checkbox" id="checkbox_MIDPRICE" value="MIDPRICE"><label for="checkbox_MIDPRICE"> Midpoint Price over period</label><br/>
+				<input type="checkbox" id="checkbox_MIN" value="MIN"><label for="checkbox_MIN"> Lowest value over a specified period</label><br/>
+				<input type="checkbox" id="checkbox_MININDEX" value="MININDEX"><label for="checkbox_MININDEX"> Index of lowest value over a specified period</label><br/>
+				<input type="checkbox" id="checkbox_MINMAX" value="MINMAX"><label for="checkbox_MINMAX"> Lowest and highest values over a specified period</label><br/>
+				<input type="checkbox" id="checkbox_MINMAXINDEX" value="MINMAXINDEX"><label for="checkbox_MINMAXINDEX"> Indexes of lowest and highest values over a specified period</label><br/>
+				<input type="checkbox" id="checkbox_MINUS_DI" value="MINUS_DI"><label for="checkbox_MINUS_DI"> Minus Directional Indicator</label><br/>
+				<input type="checkbox" id="checkbox_MINUS_DM" value="MINUS_DM"><label for="checkbox_MINUS_DM"> Minus Directional Movement</label><br/>
+				<input type="checkbox" id="checkbox_MOM" value="MOM"><label for="checkbox_MOM"> Momentum</label><br/>
+				<input type="checkbox" id="checkbox_NATR" value="NATR"><label for="checkbox_NATR"> Normalized Average True Range</label><br/>
+				<input type="checkbox" id="checkbox_OBV" value="OBV"><label for="checkbox_OBV"> On Balance Volume</label><br/>
+				<input type="checkbox" id="checkbox_PLUS_DI" value="PLUS_DI"><label for="checkbox_PLUS_DI"> Plus Directional Indicator</label><br/>
+				<input type="checkbox" id="checkbox_PLUS_DM" value="PLUS_DM"><label for="checkbox_PLUS_DM"> Plus Directional Movement</label><br/>
+				<input type="checkbox" id="checkbox_PPO" value="PPO"><label for="checkbox_PPO"> Percentage Price Oscillator</label><br/>
+				<input type="checkbox" id="checkbox_ROC" value="ROC"><label for="checkbox_ROC"> Rate of change : ((price/prevPrice)-1)*100</label><br/>
+				<input type="checkbox" id="checkbox_ROCP" value="ROCP"><label for="checkbox_ROCP"> Rate of change Percentage: (price-prevPrice)/prevPrice</label><br/>
+				<input type="checkbox" id="checkbox_ROCR" value="ROCR"><label for="checkbox_ROCR"> Rate of change ratio: (price/prevPrice)</label><br/>
+				<input type="checkbox" id="checkbox_ROCR100" value="ROCR100"><label for="checkbox_ROCR100"> Rate of change ratio 100 scale: (price/prevPrice)*100</label><br/>
+				<input type="checkbox" id="checkbox_RSI" value="RSI"><label for="checkbox_RSI"> Relative Strength Index</label><br/>
+				<input type="checkbox" id="checkbox_SAR" value="SAR"><label for="checkbox_SAR"> Parabolic SAR</label><br/>
+				<input type="checkbox" id="checkbox_SAREXT" value="SAREXT"><label for="checkbox_SAREXT"> Parabolic SAR - Extended</label><br/>
+				<input type="checkbox" id="checkbox_SMA" value="SMA"><label for="checkbox_SMA"> Simple Moving Average</label><br/>
+				<input type="checkbox" id="checkbox_STDDEV" value="STDDEV"><label for="checkbox_STDDEV"> Standard Deviation</label><br/>
+				<input type="checkbox" id="checkbox_STOCH" value="STOCH"><label for="checkbox_STOCH"> Stochastic</label><br/>
+				<input type="checkbox" id="checkbox_STOCHF" value="STOCHF"><label for="checkbox_STOCHF"> Stochastic Fast</label><br/>
+				<input type="checkbox" id="checkbox_STOCHRSI" value="STOCHRSI"><label for="checkbox_STOCHRSI"> Stochastic Relative Strength Index</label><br/>
+				<input type="checkbox" id="checkbox_SUM" value="SUM"><label for="checkbox_SUM"> Summation</label><br/>
+				<input type="checkbox" id="checkbox_T3" value="T3"><label for="checkbox_T3"> Triple Exponential Moving Average (T3)</label><br/>
+				<input type="checkbox" id="checkbox_TEMA" value="TEMA"><label for="checkbox_TEMA"> Triple Exponential Moving Average</label><br/>
+				<input type="checkbox" id="checkbox_TRANGE" value="TRANGE"><label for="checkbox_TRANGE"> True Range</label><br/>
+				<input type="checkbox" id="checkbox_TRIMA" value="TRIMA"><label for="checkbox_TRIMA"> Triangular Moving Average</label><br/>
+				<input type="checkbox" id="checkbox_TRIX" value="TRIX"><label for="checkbox_TRIX"> 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA</label><br/>
+				<input type="checkbox" id="checkbox_TSF" value="TSF"><label for="checkbox_TSF"> Time Series Forecast</label><br/>
+				<input type="checkbox" id="checkbox_TYPPRICE" value="TYPPRICE"><label for="checkbox_TYPPRICE"> Typical Price</label><br/>
+				<input type="checkbox" id="checkbox_ULTOSC" value="ULTOSC"><label for="checkbox_ULTOSC"> Ultimate Oscillator</label><br/>
+				<input type="checkbox" id="checkbox_VAR" value="VAR"><label for="checkbox_VAR"> Variance</label><br/>
+				<input type="checkbox" id="checkbox_WCLPRICE" value="WCLPRICE"><label for="checkbox_WCLPRICE"> Weighted Close Price</label><br/>
+				<input type="checkbox" id="checkbox_WILLR" value="WILLR"><label for="checkbox_WILLR"> Williams' %R</label><br/>
+				<input type="checkbox" id="checkbox_WMA" value="WMA"><label for="checkbox_WMA"> Weighted Moving Average</label><br/>
+			</div>
+			<br/>
+			Trading Strategy:<br/>
+			<select name="strategy">
+				<option>Default</option>
+			</select>
+		</td>
+		<td style="width: 40%;" id="chart">
+			<!-- chart will go here -->
+		</td>
+		<td style="width: 30%;">
+		
+		</td>
+	</tr>
+</table>
+<div style="position: relative; style="width: 500px; height: 400px; border: 1px solid Black;">
+	<div class="draggable" style="position: absolute; width: 100px; height: 30px; background-color: Brown; cursor: move;">Drag me</div>
+</div>
+<div id="loader" style="margin-top: 50px;"></div>
+<script type="text/javascript">
+	var draggable;
+	var xOffset = 0;
+	var yOffset = 0;
+	var drag = d3.behavior.drag()
+		.on("dragstart", function(){
+			xOffset = d3.mouse(this)[0];
+			yOffset = d3.mouse(this)[1];
+		})
+		.on("drag", function(){
+			var x = d3.mouse(this.parentNode)[0];
+			var y = d3.mouse(this.parentNode)[1];
+			draggable.style('left', x-xOffset);
+			draggable.style('top', y-yOffset);
+		})
+		.on("dragend", function(){
+			// do something here when dropped
+		});
+	draggable = d3.select(".draggable").call(drag);
+	var myLoader = loader({ width: 30, height: 30, container: '#loader', id: 'loadSpinner' });
+	myLoader();
+</script>
+<script type="text/javascript">
+
+    var margin = {top: 20, right: 20, bottom: 100, left: 50},
+		margin2 = {top: 420, right: 20, bottom: 20, left: 50},
+		width = d3.select("#chart").node().getBoundingClientRect().width - margin.left - margin.right,
+		height = d3.select("#chart").node().getBoundingClientRect().height - margin.top - margin.bottom,
+		height2 = d3.select("#chart").node().getBoundingClientRect().height - margin2.top - margin2.bottom;
+
+    var parseDate = d3.time.format("%d-%b-%y").parse;
+
+    var x = techan.scale.financetime()
+            .range([0, width]);
+
+    var x2 = techan.scale.financetime()
+            .range([0, width]);
+
+    var y = d3.scale.linear()
+            .range([height, 0]);
+
+    var yVolume = d3.scale.linear()
+            .range([y(0), y(0.3)]);
+
+    var y2 = d3.scale.linear()
+            .range([height2, 0]);
+
+    var brush = d3.svg.brush()
+            .on("brushend", draw);
+
+    var candlestick = techan.plot.candlestick()
+            .xScale(x)
+            .yScale(y);
+
+    var volume = techan.plot.volume()
+            .xScale(x)
+            .yScale(yVolume);
+
+    var close = techan.plot.close()
+            .xScale(x2)
+            .yScale(y2);
+
+    var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+    var xAxis2 = d3.svg.axis()
+            .scale(x2)
+            .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
+    var yAxis2 = d3.svg.axis()
+            .scale(y2)
+            .ticks(0)
+            .orient("left");
+
+    var ohlcAnnotation = techan.plot.axisannotation()
+            .axis(yAxis)
+            .format(d3.format(',.2fs'));
+
+    var timeAnnotation = techan.plot.axisannotation()
+            .axis(xAxis)
+            .format(d3.time.format('%Y-%m-%d'))
+            .width(65)
+            .translate([0, height]);
+
+    var crosshair = techan.plot.crosshair()
+            .xScale(x)
+            .yScale(y)
+            .xAnnotation(timeAnnotation)
+            .yAnnotation(ohlcAnnotation);
+
+    var svg = d3.select("#chart").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+    var focus = svg.append("g")
+            .attr("class", "focus")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    focus.append("clipPath")
+            .attr("id", "clip")
+        .append("rect")
+            .attr("x", 0)
+            .attr("y", y(1))
+            .attr("width", width)
+            .attr("height", y(0) - y(1));
+
+    focus.append("g")
+            .attr("class", "volume")
+            .attr("clip-path", "url(#clip)");
+
+    focus.append("g")
+            .attr("class", "candlestick")
+            .attr("clip-path", "url(#clip)");
+
+    focus.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")");
+
+    focus.append("g")
+            .attr("class", "y axis")
+        .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("Price ($)");
+
+    focus.append('g')
+            .attr("class", "crosshair")
+            .call(crosshair);
+
+    var context = svg.append("g")
+            .attr("class", "context")
+            .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+    context.append("g")
+            .attr("class", "close");
+
+    context.append("g")
+            .attr("class", "pane");
+
+    context.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height2 + ")");
+
+    context.append("g")
+            .attr("class", "y axis")
+            .call(yAxis2);
+
+    var zoomable, zoomable2;
+
+    var result = d3.csv("data.csv", function(error, data) {
+        var accessor = candlestick.accessor(),
+            timestart = Date.now();
+
+        data = data.slice(0, 3500).map(function(d) {
+            return {
+                date: parseDate(d.Date),
+                open: +d.Open,
+                high: +d.High,
+                low: +d.Low,
+                close: +d.Close,
+                volume: +d.Volume
+            };
+        }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
+
+        x.domain(data.map(accessor.d));
+        x2.domain(x.domain());
+        y.domain(techan.scale.plot.ohlc(data, accessor).domain());
+        y2.domain(y.domain());
+        yVolume.domain(techan.scale.plot.volume(data).domain());
+
+        focus.select("g.candlestick").datum(data);
+        focus.select("g.volume").datum(data);
+
+        context.select("g.close").datum(data).call(close);
+        context.select("g.x.axis").call(xAxis2);
+
+        // Associate the brush with the scale and render the brush only AFTER a domain has been applied
+        zoomable = x.zoomable();
+        zoomable2 = x2.zoomable();
+        brush.x(zoomable2);
+        context.select("g.pane").call(brush).selectAll("rect").attr("height", height2);
+
+        draw();
+
+        console.log("Render time: " + (Date.now()-timestart));
+    });
+
+    function draw() {
+        var candlestickSelection = focus.select("g.candlestick"),
+            data = candlestickSelection.datum();
+        zoomable.domain(brush.empty() ? zoomable2.domain() : brush.extent());
+        y.domain(techan.scale.plot.ohlc(data.slice.apply(data, zoomable.domain()), candlestick.accessor()).domain());
+        candlestickSelection.call(candlestick);
+        focus.select("g.volume").call(volume);
+        // using refresh method is more efficient as it does not perform any data joins
+        // Use this if underlying data is not changing
+//        svg.select("g.candlestick").call(candlestick.refresh);
+        focus.select("g.x.axis").call(xAxis);
+        focus.select("g.y.axis").call(yAxis);
+    }
+
+</script>
+</body>
+</html>
