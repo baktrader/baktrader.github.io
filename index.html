@@ -79,7 +79,7 @@
 </style>
 </head>
 <body>
-Welcome to BAKtrader on GitHub!
+Welcome to BAKtrader on GitHub on local!
 <table width="100%" height="500px;" border="1" style="border-collapse: collapse;">
 	<tr style="height: 0px">
 		<th>Settings</th>
@@ -255,7 +255,7 @@ Welcome to BAKtrader on GitHub!
 			<!-- chart will go here -->
 		</td>
 		<td style="width: 30%;">
-		
+			<!-- results will go here -->
 		</td>
 	</tr>
 </table>
@@ -293,7 +293,7 @@ Welcome to BAKtrader on GitHub!
 		height = d3.select("#chart").node().getBoundingClientRect().height - margin.top - margin.bottom,
 		height2 = d3.select("#chart").node().getBoundingClientRect().height - margin2.top - margin2.bottom;
 
-    var parseDate = d3.time.format("%d-%b-%y").parse;
+    var parseDate = d3.time.format("%Y.%m.%d %H:%M:%S").parse;
 
     var x = techan.scale.financetime()
             .range([0, width]);
@@ -419,18 +419,19 @@ Welcome to BAKtrader on GitHub!
 
     var zoomable, zoomable2;
 
-    var result = d3.csv("data.csv", function(error, data) {
+    var result = d3.json("data/EURUSD_1m.json", function(error, data) {
+		if (error) return console.warn(error);
         var accessor = candlestick.accessor(),
             timestart = Date.now();
 
-        data = data.slice(0, 3500).map(function(d) {
+        data = data.slice(0,1000).map(function(d) {
             return {
-                date: parseDate(d.Date),
-                open: +d.Open,
-                high: +d.High,
-                low: +d.Low,
-                close: +d.Close,
-                volume: +d.Volume
+                date: parseDate(d.timestamp),
+                open: +d.open,
+                high: +d.high,	
+                low: +d.low,
+                close: +d.close,
+                volume: +d.volume
             };
         }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
 
@@ -460,7 +461,14 @@ Welcome to BAKtrader on GitHub!
     function draw() {
         var candlestickSelection = focus.select("g.candlestick"),
             data = candlestickSelection.datum();
-        zoomable.domain(brush.empty() ? zoomable2.domain() : brush.extent());
+		console.log(zoomable2.domain());
+		console.log(brush.extent());
+		var domain = zoomable2.domain();
+		if (brush.empty())
+			domain[0] = domain[1] - 100;
+		else
+			domain = brush.extent();
+        zoomable.domain(domain);
         y.domain(techan.scale.plot.ohlc(data.slice.apply(data, zoomable.domain()), candlestick.accessor()).domain());
         candlestickSelection.call(candlestick);
         focus.select("g.volume").call(volume);
