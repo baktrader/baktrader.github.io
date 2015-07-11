@@ -18,6 +18,21 @@ path {
     shape-rendering: crispEdges;
 }
 
+.svg-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 60%; /* aspect ratio */
+    vertical-align: top;
+    overflow: hidden;
+}
+.svg-content-responsive {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 0;
+}
+
 </style>
 <body>
 
@@ -27,9 +42,9 @@ path {
 <script>
 
 // Set the dimensions of the canvas / graph
-var margin = {top: 30, right: 20, bottom: 30, left: 50},
-    width = 600 - margin.left - margin.right,
-    height = 270 - margin.top - margin.bottom;
+var margin = {top: 30, right: 20, bottom: 30, left: 50};//,
+    width = 1000 - margin.left - margin.right,
+    height = 575 - margin.top - margin.bottom;
 
 // Parse the date / time
 var parseDate = d3.time.format("%d-%b-%y").parse;
@@ -62,12 +77,19 @@ var downTriangle = d3.svg.symbol()
     
 // Adds the svg canvas
 var svg = d3.select("body")
-    .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-        .attr("transform", 
-              "translate(" + margin.left + "," + margin.top + ")");
+	.append("div")
+		.classed("svg-container", true)
+	.append("svg")
+		//responsive SVG needs these 2 attributes and no width and height attr
+		.attr("preserveAspectRatio", "xMinYMin meet")
+		.attr("viewBox", "0 0 1000 575")
+		//class to make it responsive
+		.classed("svg-content-responsive", true)
+		//.attr("width", width + margin.left + margin.right)
+		//.attr("height", height + margin.top + margin.bottom)
+	.append("g")
+		.attr("transform", 
+			  "translate(" + margin.left + "," + margin.top + ")");
 
 // Get the data
 d3.csv("data.csv", function(error, data) {
