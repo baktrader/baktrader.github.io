@@ -112,16 +112,15 @@ d3.csv("data.csv", function(error, data) {
 		.data(data)//.filter(function(d) { return d.close > 0; }))
 		.enter().append("path")
 			.attr("transform", 
-				function (d) { 
-					var transform = "translate(" + x(d.date) + "," + y(d.close) + ")";
-					if (d.close > 400)
+				function (d, i) { 
+					var isDown = (i & 1);
+					var transform = "translate(" + x(d.date) + "," + (y(d.close) + (isDown ? -10 : 10)) + ")";
+					if (isDown)
 						transform += " rotate(180)"; 
 					return transform;
 				})
 			.attr("d", d3.svg.symbol().type("triangle-up").size(20))
-			.style("stroke", function (d) { return d.close > 400 ? "red" : "green"; });
-			
-	// here is something different
+			.style("stroke", function (d, i) { return (i & 1) ? "red" : "green"; });
 });
 
 </script>
