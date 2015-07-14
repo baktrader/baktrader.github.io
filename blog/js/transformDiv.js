@@ -9,14 +9,14 @@ define([
 ], function (d3, sl, MockData, /*tickWidth,*/ moment) {
     'use strict';
 
-    var mockData = new MockData(0, 0.1, 100, 50, function (moment) {
-        return !(moment.day() === 0 || moment.day() === 6);
-    });
+    // var mockData = new MockData(0, 0.1, 100, 50, function (moment) {
+        // return !(moment.day() === 0 || moment.day() === 6);
+    // });
 
-    var fromDate = new Date(2012, 8, 1),
-        toDate = new Date(2014, 8, 1);
+    // var fromDate = new Date(2012, 8, 1),
+        // toDate = new Date(2014, 8, 1);
 
-    var data = mockData.generateOHLC(fromDate, toDate);
+    // var data = mockData.generateOHLC(fromDate, toDate);
 	
 	var w = window,
     d = document,
@@ -27,7 +27,7 @@ define([
 
     var margin = {top: 20, right: 20, bottom: 30, left: 50},
         width = windowWidth - margin.left - margin.right - 25,
-        height = windowHeight - margin.top - margin.bottom - 25;
+        height = windowHeight - margin.top - margin.bottom - 50;
 
     var xScale = d3.time.scale(),
         yScale = d3.scale.linear();
@@ -45,15 +45,106 @@ define([
 
     var series = sl.series.candlestick()
         .xScale(xScale)
-        .yScale(yScale);
-        //.tickWidth(tickWidth(xScale, fromDate, toDate));
+        .yScale(yScale)
+        .rectangleWidth(5); // initial value until data loads or zoom happens
 
     var zoom = d3.behavior.zoom()
         .x(xScale)
         .scaleExtent([0.5, 500])
         .on('zoom', zoomed)
         .on('zoomend', zoomend);
+		
+	var parseDate = d3.time.format("%Y.%m.%d %H:%M:%S").parse;
+	
+	var symbol = d3.select("#symbol")
+			.on("change", load);
+	var granularity = d3.select("#granularity")
+			.on("change", load);
+			
+	function granularityToSeconds() {
+		switch (granularity.node().value) {
+			case "1m":
+				return 60;
+			case "5m":
+				return 300;
+			case "30m":
+				return 1800;
+			case "1h":
+				return 3600;
+			case "1d":
+				return 86400;
+		}
+	}
+	
+	function rectangleWidth() {
+        var scaleRange = xScale.range();
+		var domain = xScale.domain();
+		var seconds = Math.abs(domain[1].getTime() - domain[0].getTime()) / 1000;
+		var numCandles = seconds / granularityToSeconds();
+        return (scaleRange[1] - scaleRange[0]) / (numCandles * 2.5);
+    };
 
+	function load() {
+		d3.json("/data/" + symbol.node().value + "_" + granularity.node().value + ".json", function(error, jsonData) {
+			if (error) {
+				return alert(error);
+			}
+			
+			var accessor = function (d) { return d.date; };
+
+			data = jsonData.slice(0,5000).map(function(d) {
+				return {
+					date: parseDate(d.timestamp),
+					open: +d.open,
+					high: +d.high,	
+					low: +d.low,
+					close: +d.close,
+					volume: +d.volume
+				};
+			});//.sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
+			
+			// Set scale domains
+			xScale.domain(d3.extent(data, function (d) {
+				return d.date;
+			}));
+
+			yScale.domain(
+				[
+					d3.min(data, function (d) {
+						return d.low;
+					}),
+					d3.max(data, function (d) {
+						return d.high;
+					})
+				]
+			);
+
+			// Set scale ranges
+			xScale.range([0, width]);
+			yScale.range([height, 0]);
+
+			zoom.x(xScale);
+			oldScale = yScale.copy();
+
+			// Draw axes
+			g.append('g')
+				.attr('class', 'x axis')
+				.attr('transform', 'translate(0,' + height + ')')
+				.call(xAxis);
+
+			g.append('g')
+				.attr('class', 'y axis')
+				.call(yAxis);
+
+			// Draw series.
+			series.rectangleWidth(rectangleWidth());
+			seriesSvg.append('g')
+				.attr('class', 'series')
+				.datum(data)
+				.call(series);
+			
+		});
+	}
 
     function zoomed() {
 
@@ -120,7 +211,7 @@ define([
         oldScale = yScale.copy();
 
         zoom.x(xScale);
-        //series.tickWidth(tickWidth(xScale, xDomain[0], xDomain[1]));
+        series.rectangleWidth(rectangleWidth());
 
         seriesDiv.select('.series')
             .call(series);
@@ -178,42 +269,5 @@ define([
         .attr('height', height)
         .call(zoom);
 
-    // Set scale domains
-    xScale.domain(d3.extent(data, function (d) {
-        return d.date;
-    }));
-
-    yScale.domain(
-        [
-            d3.min(data, function (d) {
-                return d.low;
-            }),
-            d3.max(data, function (d) {
-                return d.high;
-            })
-        ]
-    );
-
-    // Set scale ranges
-    xScale.range([0, width]);
-    yScale.range([height, 0]);
-
-    zoom.x(xScale);
-    oldScale = yScale.copy();
-
-    // Draw axes
-    g.append('g')
-        .attr('class', 'x axis')
-        .attr('transform', 'translate(0,' + height + ')')
-        .call(xAxis);
-
-    g.append('g')
-        .attr('class', 'y axis')
-        .call(yAxis);
-
-    // Draw series.
-    seriesSvg.append('g')
-        .attr('class', 'series')
-        .datum(data)
-        .call(series);
+    load();
 });

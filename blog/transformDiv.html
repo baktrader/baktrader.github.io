@@ -21,10 +21,25 @@
 	}
 	</style>
 
+	<script type="text/javascript">
+		var data; // make it global...for tickWidth...
+	</script>
     <script src="js/require.config.js"></script>
     <script data-main="js/transformDiv.js" src="js/lib/require.js"></script>
 </head>
 <body>
+<select id="symbol">
+	<optgroup label="Foreign Exchange">
+		<option value="EURUSD">EURUSD</option>
+	</optgroup>
+</select>
+<select id="granularity">
+	<option value="1m">1 minute</option>
+	<option value="5m">5 minutes</option>
+	<option value="30m" selected="selected">30 minutes</option>
+	<option value="1h">1 hour</option>
+	<option value="1d">1 day</option>
+</select>
 <div id="chart"></div>
 </body>
 </html>
