@@ -37,16 +37,14 @@ html * {
     stroke: red;
 }
 
-.chart .ohlc-series .bar.up-day {
+.chart .ohlc-series .bar.up-day,
+.chart .candlestick-series .bar.up-day path {
     stroke: green;
 }
 
-.chart .ohlc-series .bar.down-day {
+.chart .ohlc-series .bar.down-day,
+.chart .candlestick-series .bar.down-day path {
     stroke: red;
-}
-
-.chart .candlestick-series .bar path {
-    stroke: black;
 }
 
 .chart .comparison-series .line {
