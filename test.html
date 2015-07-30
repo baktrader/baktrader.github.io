@@ -4,7 +4,7 @@
 
 body { font: 12px Arial;}
 
-path { 
+path {
     stroke: steelblue;
     stroke-width: 2;
     fill: none;
@@ -36,7 +36,7 @@ path {
 </style>
 <body>
 
-<!-- load the d3.js library -->    
+<!-- load the d3.js library -->
 <script src="http://d3js.org/d3.v3.min.js"></script>
 
 <script>
@@ -74,7 +74,7 @@ var upTriangle = d3.svg.symbol()
 var downTriangle = d3.svg.symbol()
 		.type("triangle-down")
 		.size(20);
-    
+
 // Adds the svg canvas
 var svg = d3.select("body")
 	.append("div")
@@ -88,7 +88,7 @@ var svg = d3.select("body")
 		//.attr("width", width + margin.left + margin.right)
 		//.attr("height", height + margin.top + margin.bottom)
 	.append("g")
-		.attr("transform", 
+		.attr("transform",
 			  "translate(" + margin.left + "," + margin.top + ")");
 
 // Get the data
@@ -128,21 +128,22 @@ d3.csv("data.csv", function(error, data) {
         .attr("dy", "1em")
         .style("text-anchor", "middle")
         .text("Value");
-	
+
 	// Add the triangles
 	svg.selectAll("path")
 		.data(data)//.filter(function(d) { return d.close > 0; }))
 		.enter().append("path")
-			.attr("transform", 
-				function (d, i) { 
+			.attr("transform",
+				function (d, i) {
 					var isDown = (i & 1);
 					var transform = "translate(" + x(d.date) + "," + (y(d.close) + (isDown ? -10 : 10)) + ")";
 					if (isDown)
-						transform += " rotate(180)"; 
+						transform += " rotate(180)";
 					return transform;
 				})
 			.attr("d", d3.svg.symbol().type("triangle-up").size(20))
-			.style("stroke", function (d, i) { return (i & 1) ? "red" : "green"; });
+			.style("stroke", function (d, i) { return (i & 1) ? "red" : "green"; })
+			.style("fill", function (d, i) { return (i & 1) ? "red" : "green"; });
 });
 
 </script>

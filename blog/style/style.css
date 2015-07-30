@@ -24,30 +24,15 @@ html * {
     stroke-width: 1;
 }
 
-.chart .ohlc-series path {
-    vector-effect: non-scaling-stroke;
-    stroke-width: 1.5;
-}
-
-.chart .ohlc-series .up-days {
-    stroke: green;
-}
-
-.chart .ohlc-series .down-days {
-    stroke: red;
-}
-
-.chart .ohlc-series .bar.up-day,
 .chart .candlestick-series .bar.up-day path {
     stroke: green;
 }
 
-.chart .ohlc-series .bar.down-day,
 .chart .candlestick-series .bar.down-day path {
     stroke: red;
 }
 
-.chart .comparison-series .line {
+.chart .sma {
     fill: none;
     stroke: steelblue;
     stroke-width: 1.5px;
